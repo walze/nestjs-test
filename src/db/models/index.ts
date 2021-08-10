@@ -1,21 +1,13 @@
-import { DataTypes } from 'sequelize';
+import { defaultTimestamp } from 'helpers';
+import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../setup';
 
-const defaultTimestamp = {
-  createdAt: {
-    type: DataTypes.DATE,
-    defaultValue: new Date(),
-  },
-  updatedAt: {
-    type: DataTypes.DATE,
-    defaultValue: new Date(),
-  },
-};
-
-export const Car = sequelize.define('car', {
+export const Car = sequelize.define<Model<Car>>('car', {
   ...defaultTimestamp,
+  licensePlate: DataTypes.STRING,
 });
-export const Lot = sequelize.define('lot', {
+
+export const Lot = sequelize.define<Model<Lot>>('lot', {
   ...defaultTimestamp,
 });
 
