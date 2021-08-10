@@ -1,4 +1,4 @@
-import { defaultTimestamp } from 'helpers';
+import { defaultTimestamp } from '../../helpers';
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../setup';
 
