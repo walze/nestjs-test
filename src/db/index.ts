@@ -1,4 +1,3 @@
-import './models';
 import { sequelize } from './setup';
 
 export const initSql = async () => {

@@ -20,5 +20,8 @@ Controllers:
 - /lot
   - get /
   - get /:id
+  - get /available
+  - post /
+  - delete /
   <!-- - post / -->
   <!-- - update / -->

@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
 import { CarService } from './car.service';
 
 @Controller('car')
@@ -8,5 +8,15 @@ export class CarController {
   @Get()
   index() {
     return this.carService.getAll();
+  }
+
+  @Post()
+  findOrCreate(@Body('licensePlate') licensePlate: string) {
+    return this.carService.findOrCreate(licensePlate);
+  }
+
+  @Delete()
+  delete(@Body('licensePlate') licensePlate: string) {
+    return this.carService.delete(licensePlate);
   }
 }
