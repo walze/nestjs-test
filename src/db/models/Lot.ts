@@ -7,7 +7,7 @@ export class Lot extends Model {
   createdAt: Date;
   updatedAt: Date;
 
-  CarId: number | null;
+  carId: number | null;
 }
 
 export const lotAttr = { ...defaultTimestamp };

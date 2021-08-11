@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CarController } from 'car/car.controller';
 import { CarService } from 'car/car.service';
+import { HistoryService } from 'history/history.service';
 import { LotController } from './lot.controller';
 import { LotService } from './lot.service';
 
 @Module({
-  controllers: [LotController, CarController],
-  providers: [LotService, CarService],
+  controllers: [LotController],
+  providers: [LotService, CarService, HistoryService],
 })
 export class LotModule {}

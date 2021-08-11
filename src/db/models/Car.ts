@@ -12,5 +12,5 @@ export class Car extends Model {
 
 export const carAttr = {
   ...defaultTimestamp,
-  licensePlate: DataTypes.STRING,
+  licensePlate: { type: DataTypes.STRING, unique: 'compositeIndex' },
 };

@@ -8,11 +8,11 @@ Lot.init(lotAttr, { sequelize, tableName: 'lot' });
 History.init(historyAttr, {
   sequelize,
   tableName: 'history',
-  timestamps: false,
+  timestamps: true,
 });
 
-Car.hasOne(Lot);
-Lot.belongsTo(Car);
+Car.hasOne(Lot, { foreignKey: 'carId' });
+Lot.belongsTo(Car, { foreignKey: 'carId' });
 
-Car.hasMany(History);
-Lot.hasMany(History);
+Car.hasMany(History, { foreignKey: 'carId' });
+Lot.hasMany(History, { foreignKey: 'lotId' });
