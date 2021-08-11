@@ -5,8 +5,6 @@ import { WhereOptions } from 'sequelize/types';
 @Injectable()
 export class LotService {
   getAll(where?: WhereOptions<Lot>): Promise<Lot[]> {
-    Lot.findAll().then(console.log);
-    console.log('AAAAAAAAAAAAaaa');
     return Lot.findAll({ where });
   }
 

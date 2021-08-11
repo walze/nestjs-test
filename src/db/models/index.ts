@@ -19,6 +19,7 @@ Car.init(
 export class Lot extends Model {
   createdAt: Date;
   updatedAt: Date;
+  CarId: number | null;
 }
 Lot.init({ ...defaultTimestamp }, { sequelize, tableName: 'lot' });
 
