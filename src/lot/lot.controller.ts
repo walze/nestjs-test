@@ -24,7 +24,7 @@ export class LotController {
     return this.lotService.get(id);
   }
 
-  @Post()
+  @Post('c/')
   assignCar(
     @Body('id', ParseIntPipe) id: number,
     @Body('licensePlate') lp: string,
@@ -32,7 +32,7 @@ export class LotController {
     return this.lotService.assignCar(id, lp);
   }
 
-  @Delete(':id')
+  @Delete('c/:id')
   unssignCar(@Param('id', ParseIntPipe) id: number) {
     return this.lotService.unassignCar(id);
   }
