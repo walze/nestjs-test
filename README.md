@@ -20,5 +20,5 @@ Controllers:
 - /lot
   - get /
   - get /:id
-  - post /
-  - update /
+  <!-- - post / -->
+  <!-- - update / -->

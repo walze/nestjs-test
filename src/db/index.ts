@@ -2,7 +2,7 @@ import './models';
 import { sequelize } from './setup';
 
 export const initSql = async () => {
-  sequelize.sync({ logging: console.log }).catch(console.error);
+  await sequelize.sync({ logging: console.log }).catch(console.error);
 
   try {
     sequelize.authenticate().then(() => console.log('DB Working'));
