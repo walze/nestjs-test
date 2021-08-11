@@ -6,13 +6,14 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
-import { CarService } from 'car/car.service';
+import { AuthGuard } from 'auth.guard';
 import { LotService } from './lot.service';
 
 @Controller('lot')
 export class LotController {
-  constructor(private lotService: LotService, private carService: CarService) {}
+  constructor(private lotService: LotService) {}
 
   @Get()
   index() {
@@ -32,6 +33,7 @@ export class LotController {
     return this.lotService.assignCar(id, lp);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('c/:id')
   unssignCar(@Param('id', ParseIntPipe) id: number) {
     return this.lotService.unassignCar(id);

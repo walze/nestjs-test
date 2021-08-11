@@ -5,5 +5,6 @@ module.exports = {
     database: 'db',
     host: 'localhost',
     dialect: 'mysql',
+    adminKeys: ['abc123', 'zxc789'],
   },
 };
