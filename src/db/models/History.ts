@@ -1,13 +1,15 @@
 import { defaultTimestamp } from 'helpers';
-import { Model } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 
 export class History extends Model {
   id: number;
 
   lotId: number;
   carId: number;
+  date: Date;
 }
 
 export const historyAttr = {
   ...defaultTimestamp,
+  date: DataTypes.DATE,
 };
