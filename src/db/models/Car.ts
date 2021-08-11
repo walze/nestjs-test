@@ -1,5 +1,5 @@
 import { defaultTimestamp } from 'helpers';
-import { DataTypes, Model } from 'sequelize/types';
+import { DataTypes, Model } from 'sequelize';
 
 export class Car extends Model {
   id: number;

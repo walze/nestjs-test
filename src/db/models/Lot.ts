@@ -1,5 +1,5 @@
 import { defaultTimestamp } from 'helpers';
-import { Model } from 'sequelize/types';
+import { Model } from 'sequelize';
 
 export class Lot extends Model {
   id: number;
