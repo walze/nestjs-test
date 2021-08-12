@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CarService } from 'car/car.service';
+import { Car } from 'db/models/Car';
 import { Lot } from 'db/models/Lot';
 import { HistoryService } from 'history/history.service';
 import { WhereOptions } from 'sequelize';
@@ -12,7 +13,7 @@ export class LotService {
   ) {}
 
   getAll(where?: WhereOptions<Lot>): Promise<Lot[]> {
-    return Lot.findAll({ where });
+    return Lot.findAll({ where, include: Car });
   }
 
   get(id: number) {
@@ -20,6 +21,7 @@ export class LotService {
       where: {
         id,
       },
+      include: Car,
     });
   }
 
