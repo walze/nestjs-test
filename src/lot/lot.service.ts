@@ -30,8 +30,8 @@ export class LotService {
   }
 
   async assignCar(licensePlate: string) {
-    const [car] = await this.carService.findOrCreate(licensePlate);
-    if (!car) return 'not car';
+    const [car, created] = await this.carService.findOrCreate(licensePlate);
+    if (!car) return ['not car', car, created];
 
     const isAssigned = await Lot.findOne({ where: { carId: car.get('id') } });
     if (isAssigned) return 'assigned';

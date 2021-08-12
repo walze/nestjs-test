@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'auth.guard';
+import { BlacklistGuard } from 'blacklist.guard';
 import { HistoryService } from 'history/history.service';
 import { LotService } from './lot.service';
 
@@ -30,11 +31,11 @@ export class LotController {
   }
 
   @Post('c')
+  @UseGuards(BlacklistGuard)
   assignCar(@Body('licensePlate') lp: string) {
     return this.lotService.assignCar(lp);
   }
 
-  @UseGuards(AuthGuard)
   @Delete('c/:id')
   unssignCar(@Param('id', ParseIntPipe) id: number) {
     return this.lotService.unassignCar(id);
