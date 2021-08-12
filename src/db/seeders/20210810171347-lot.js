@@ -2,7 +2,7 @@ const numberOfLots = 10;
 
 module.exports = {
   up: (queryInterface) => {
-    return queryInterface.bulkInsert('lot', [
+    return queryInterface.bulkInsert('lots', [
       ...Array(numberOfLots).map(() => ({})),
     ]);
   },
