@@ -9,8 +9,13 @@ export class BlacklistGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const req = context.switchToHttp().getRequest();
+    const {
+      params: { id },
+    } = context.switchToHttp().getRequest();
+    if (!id) return true;
 
-    return this.bs.isBanned(Number(req.params.id)).then((a) => !a);
+    console.log(id);
+
+    return this.bs.isBanned(+id).then((a) => !a);
   }
 }

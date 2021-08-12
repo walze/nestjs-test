@@ -13,11 +13,16 @@ export class BlacklistService {
   }
 
   ban(id: number) {
-    return Car.findOrCreate({
-      where: {
-        [Op.and]: [id, { banned: true }],
+    return Car.update(
+      {
+        banned: true,
       },
-    });
+      {
+        where: {
+          id,
+        },
+      },
+    );
   }
 
   unban(id: number) {
