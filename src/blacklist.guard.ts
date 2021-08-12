@@ -1,27 +1,16 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { BlacklistService } from 'blacklist/blacklist.service';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class BlacklistGuard implements CanActivate {
-  constructor(
-    @Inject('BlacklistService')
-    private readonly bs: BlacklistService,
-  ) {
-    console.log(this.bs);
-  }
+  constructor(private readonly bs: BlacklistService) {}
 
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest();
-    console.log(req);
 
-    return true;
+    return this.bs.isBanned(Number(req.params.id)).then((a) => !a);
   }
 }

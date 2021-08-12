@@ -36,7 +36,6 @@ export class LotController {
     return this.lotService.assignCar(lp);
   }
 
-  @UseGuards(AuthGuard)
   @Delete('c/:id')
   unssignCar(@Param('id', ParseIntPipe) id: number) {
     return this.lotService.unassignCar(id);

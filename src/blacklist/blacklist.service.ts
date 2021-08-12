@@ -1,13 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { Blacklist } from 'db/models/Blacklist';
+import { Car } from 'db/models/Car';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class BlacklistService {
-  ban(carId: number) {
-    return Blacklist.findOrCreate({ where: { carId } });
+  isBanned(id: number) {
+    return Car.count({
+      where: {
+        [Op.and]: [id, { banned: true }],
+      },
+    }).then(Boolean);
   }
 
-  unban(carId: number) {
-    return Blacklist.destroy({ where: { carId } });
+  ban(id: number) {
+    return Car.findOrCreate({
+      where: {
+        [Op.and]: [id, { banned: true }],
+      },
+    });
+  }
+
+  unban(id: number) {
+    return Car.destroy({
+      where: {
+        [Op.and]: [id, { banned: false }],
+      },
+    });
   }
 }

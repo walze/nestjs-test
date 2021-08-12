@@ -6,11 +6,14 @@ export class Car extends Model {
 
   licensePlate: string;
 
+  banned: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
 
 export const carAttr = {
   ...defaultTimestamp,
+  banned: DataTypes.BOOLEAN,
   licensePlate: { type: DataTypes.STRING, unique: 'compositeIndex' },
 };

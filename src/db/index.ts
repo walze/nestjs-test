@@ -9,6 +9,9 @@ export const initSql = async () => {
         '------------------------- DB Working -------------------------',
       ),
     )
-    .then(() => sequelize.sync({ logging: console.log, force: true }))
-    .catch((e) => console.error('Unable to connect to the database:', e));
+    .then(() => sequelize.sync({ logging: console.log, force: false }))
+    .catch((e) => {
+      console.error('Unable to connect to the database:', e);
+      throw e;
+    });
 };
