@@ -30,11 +30,8 @@ export class LotController {
   }
 
   @Post('c')
-  assignCar(
-    @Body('id', ParseIntPipe) id: number,
-    @Body('licensePlate') lp: string,
-  ) {
-    return this.lotService.assignCar(id, lp);
+  assignCar(@Body('licensePlate') lp: string) {
+    return this.lotService.assignCar(lp);
   }
 
   @UseGuards(AuthGuard)

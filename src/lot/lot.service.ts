@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CarService } from 'car/car.service';
 import { Lot } from 'db/models/Lot';
-import { sequelize } from 'db/setup';
 import { HistoryService } from 'history/history.service';
 import { WhereOptions } from 'sequelize';
 
@@ -28,37 +27,29 @@ export class LotService {
     return Lot.update({ carId }, { where: { id } });
   }
 
-  async assignCar(id: number, licensePlate: string) {
-    const lot = await this.get(id);
-    const lotData = lot?.get();
-    if (!lot || lotData.carId !== null) return null;
-
+  async assignCar(licensePlate: string) {
     const [car] = await this.carService.findOrCreate(licensePlate);
-    if (!car) return null;
+    if (!car) return 'not car';
+
+    const isAssigned = await Lot.findOne({ where: { carId: car.get('id') } });
+    if (isAssigned) return 'assigned';
+
+    const lot = await Lot.findOne({ where: { carId: null } });
+    if (!lot || lot.get('carId') !== null) return 'not lot';
 
     car.setDataValue('updatedAt', new Date());
     lot.setDataValue('carId', car.get('id'));
 
-    return sequelize
-      .transaction()
-      .then((transaction) => {
-        this.historyService.create(car.id, lot.id);
+    this.historyService.create(car.get('id'), lot.get('id'));
 
-        return Promise.all([
-          lot.save({ transaction }),
-          car.save({ transaction }),
-        ]);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    return Promise.all([lot.save(), car.save()]);
   }
 
   async unassignCar(id: number) {
     const lot = await this.get(id);
     if (!lot) return null;
 
-    lot.carId = null;
+    lot.setDataValue('carId', null);
 
     return lot.save();
   }

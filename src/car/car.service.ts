@@ -11,7 +11,9 @@ export class CarService {
   findOrCreate(licensePlate: string) {
     return Car.findOrCreate({
       where: { licensePlate },
-      defaults: { licensePlate },
+    }).catch((e) => {
+      console.error(e);
+      return [];
     });
   }
 
