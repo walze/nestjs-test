@@ -1,4 +1,3 @@
-import { defaultTimestamp } from 'helpers';
 import { DataTypes, Model } from 'sequelize';
 
 export class History extends Model {
@@ -10,6 +9,5 @@ export class History extends Model {
 }
 
 export const historyAttr = {
-  ...defaultTimestamp,
   date: DataTypes.DATE,
 };
