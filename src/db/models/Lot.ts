@@ -17,10 +17,9 @@ export type Lot = Model<LotAttr, Optional<LotAttr, 'id'>>;
 export const lotAttr = {
   ...defaultAttributes,
   carId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER.UNSIGNED,
     references: {
       model: Car,
-      key: 'id',
     },
   },
 };

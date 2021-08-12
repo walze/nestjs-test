@@ -2,6 +2,7 @@ import { sequelize } from 'db/setup';
 import { defaultAttributes } from 'helpers';
 import { DataTypes, Model, Optional } from 'sequelize';
 import { Car } from './Car';
+import { Lot } from './Lot';
 
 export interface HistoryAttr {
   id: number;
@@ -17,17 +18,15 @@ export const historyAttr = {
   ...defaultAttributes,
   date: DataTypes.DATE,
   carId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER.UNSIGNED,
     references: {
       model: Car,
-      key: 'id',
     },
   },
   lotId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER.UNSIGNED,
     references: {
-      model: Car,
-      key: 'id',
+      model: Lot,
     },
   },
 };
