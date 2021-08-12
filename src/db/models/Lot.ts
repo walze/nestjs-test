@@ -1,13 +1,28 @@
-import { defaultTimestamp } from 'helpers';
-import { Model } from 'sequelize';
+import { sequelize } from 'db/setup';
+import { defaultAttributes } from 'helpers';
+import { DataTypes, Model, Optional } from 'sequelize';
+import { Car } from './Car';
 
-export class Lot extends Model {
+export interface LotAttr {
   id: number;
+
+  carId: number | null;
 
   createdAt: Date;
   updatedAt: Date;
-
-  carId: number | null;
 }
 
-export const lotAttr = { ...defaultTimestamp };
+export type Lot = Model<LotAttr, Optional<LotAttr, 'id'>>;
+
+export const lotAttr = {
+  ...defaultAttributes,
+  carId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Car,
+      key: 'id',
+    },
+  },
+};
+
+export const Lot = sequelize.define<Lot>('lot', lotAttr);

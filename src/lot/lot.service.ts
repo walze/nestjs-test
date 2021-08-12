@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CarService } from 'car/car.service';
-import { Car } from 'db/models/Car';
-import { Lot } from 'db/models/Lot';
+import { Lot, Car, LotAttr } from 'db/models';
 import { HistoryService } from 'history/history.service';
 import { WhereOptions } from 'sequelize';
 
@@ -12,7 +11,7 @@ export class LotService {
     private historyService: HistoryService,
   ) {}
 
-  getAll(where?: WhereOptions<Lot>): Promise<Lot[]> {
+  getAll(where?: WhereOptions<LotAttr>): Promise<Lot[]> {
     return Lot.findAll({ where, include: Car });
   }
 
@@ -37,12 +36,12 @@ export class LotService {
     if (isAssigned) return 'assigned';
 
     const lot = await Lot.findOne({ where: { carId: null } });
-    if (!lot || lot.get('carId') !== null) return 'not lot';
+    if (!lot || lot.getDataValue('carId') !== null) return 'not lot';
 
     car.setDataValue('updatedAt', new Date());
-    lot.setDataValue('carId', car.get('id'));
+    lot.setDataValue('carId', car.getDataValue('id'));
 
-    this.historyService.create(car.get('id'), lot.get('id'));
+    this.historyService.create(car.getDataValue('id'), lot.getDataValue('id'));
 
     return Promise.all([lot.save(), car.save()]);
   }
