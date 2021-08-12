@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { History } from 'db/models/History';
+import { History, HistoryAttr } from 'db/models';
 import { Op, WhereOptions } from 'sequelize';
 
 @Injectable()
 export class HistoryService {
-  getAll(where?: WhereOptions<History>): Promise<History[]> {
+  getAll(where?: WhereOptions<HistoryAttr>): Promise<History[]> {
     return History.findAll({ where });
   }
 
@@ -25,7 +25,7 @@ export class HistoryService {
   history(start: string, end: string) {
     return History.findAll({
       where: {
-        updatedAt: {
+        date: {
           [Op.between]: [start, end],
         },
       },

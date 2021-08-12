@@ -1,18 +1,13 @@
-import { sequelize } from '../setup';
-import { Car, carAttr } from './Car';
-import { History, historyAttr } from './History';
-import { Lot, lotAttr } from './Lot';
+import { Car } from './Car';
+import { History } from './History';
+import { Lot } from './Lot';
 
-Car.init(carAttr, { sequelize, tableName: 'car' });
-Lot.init(lotAttr, { sequelize, tableName: 'lot' });
-History.init(historyAttr, {
-  sequelize,
-  tableName: 'history',
-  timestamps: true,
-});
+Car.hasOne(Lot, { foreignKey: 'carId', constraints: false });
+Lot.belongsTo(Car, { foreignKey: 'carId', constraints: false });
 
-Car.hasOne(Lot, { foreignKey: 'carId' });
-Lot.belongsTo(Car, { foreignKey: 'carId' });
+Car.hasMany(History, { foreignKey: 'carId', constraints: false });
+Lot.hasMany(History, { foreignKey: 'lotId', constraints: false });
 
-Car.hasMany(History, { foreignKey: 'carId' });
-Lot.hasMany(History, { foreignKey: 'lotId' });
+export * from './Car';
+export * from './Lot';
+export * from './History';

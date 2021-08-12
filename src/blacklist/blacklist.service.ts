@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Car } from 'db/models/Car';
+import { Car } from 'db/models';
 import { Op } from 'sequelize';
 
 @Injectable()

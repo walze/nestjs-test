@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Car } from 'db/models/Car';
+import { Car, CarAttr } from 'db/models/Car';
 import { WhereOptions } from 'sequelize/types';
 
 @Injectable()
 export class CarService {
-  getAll(where?: WhereOptions<Car>): Promise<Car[]> {
+  getAll(where?: WhereOptions<CarAttr>): Promise<Car[]> {
     return Car.findAll({ where });
   }
 
