@@ -14,12 +14,12 @@ export class BlacklistController {
 
   @Get(':id')
   isBanned(@Param('id', ParseIntPipe) id: number) {
-    return this.blacklistService.isBanned(id);
+    return this.blacklistService.isBanned({ id });
   }
 
   @Post(':id')
   findOrCreate(@Param('id', ParseIntPipe) id: number) {
-    return this.blacklistService.ban(id);
+    return this.blacklistService.ban({ id });
   }
 
   @Delete(':id')

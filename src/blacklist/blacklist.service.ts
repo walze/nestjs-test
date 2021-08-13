@@ -4,15 +4,15 @@ import { Op } from 'sequelize';
 
 @Injectable()
 export class BlacklistService {
-  isBanned(id: number) {
+  isBanned(find: { id?: number; licensePlate?: string }) {
     return Car.count({
       where: {
-        [Op.and]: [id, { banned: true }],
+        [Op.and]: [find, { banned: true }],
       },
     }).then(Boolean);
   }
 
-  ban(id: number) {
+  ban({ id, licensePlate }: { id?: number; licensePlate?: string }) {
     return Car.update(
       {
         banned: true,
@@ -20,6 +20,7 @@ export class BlacklistService {
       {
         where: {
           id,
+          licensePlate,
         },
       },
     );

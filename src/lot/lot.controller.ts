@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -9,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'auth.guard';
-import { BlacklistGuard } from 'blacklist.guard';
+import { BlacklistService } from 'blacklist/blacklist.service';
 import { HistoryService } from 'history/history.service';
 import { LotService } from './lot.service';
 
@@ -17,6 +18,7 @@ import { LotService } from './lot.service';
 export class LotController {
   constructor(
     private lotService: LotService,
+    private bs: BlacklistService,
     private historyService: HistoryService,
   ) {}
 
@@ -31,9 +33,11 @@ export class LotController {
   }
 
   @Post('c')
-  @UseGuards(BlacklistGuard)
-  assignCar(@Body('licensePlate') lp: string) {
-    return this.lotService.assignCar(lp);
+  assignCar(@Body('licensePlate') licensePlate: string) {
+    if (this.bs.isBanned({ licensePlate }))
+      throw new ForbiddenException('Car is Banned');
+
+    return this.lotService.assignCar(licensePlate);
   }
 
   @Delete('c/:id')
