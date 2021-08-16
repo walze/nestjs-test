@@ -1,9 +1,6 @@
-export interface ConfigValues {
-  username: string;
-  password: string;
-  database: string;
-  host: string;
-  dialect: string;
+import { Options } from 'sequelize';
+
+export interface ConfigValues extends Options {
   adminKeys: string[];
 }
 
