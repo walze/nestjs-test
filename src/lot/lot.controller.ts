@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -11,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from 'auth.guard';
 import { BlacklistService } from 'blacklist/blacklist.service';
+import { RequestError } from 'helpers';
 import { HistoryService } from 'history/history.service';
 import { ParseDate } from 'pipes/date.pipe';
 
@@ -39,7 +39,10 @@ export class LotController {
     this.bs.isBanned({ licensePlate });
 
     if (await this.bs.isBanned({ licensePlate }))
-      throw new ForbiddenException('Car is Banned');
+      throw RequestError({
+        message: 'Car is Banned',
+        status: 400,
+      });
 
     return this.lotService.assignCar(licensePlate);
   }

@@ -31,7 +31,7 @@ export type IResponseError = Error & IResponse<null>;
 
 export const RequestError = ({
   message,
-  status,
+  status = 500,
 }: {
   message: string;
   status: number;
