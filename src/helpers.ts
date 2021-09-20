@@ -21,3 +21,23 @@ export const isValidDate = pipe(
   (d: Date | number) => +new Date(d),
   Number.isNaN,
 );
+
+export type IResponse<T> = {
+  status: number;
+  data: T;
+};
+
+export type IResponseError = Error & IResponse<null>;
+
+export const RequestError = ({
+  message,
+  status,
+}: {
+  message: string;
+  status: number;
+}): IResponseError => ({
+  ...new Error(message),
+  message,
+  status,
+  data: null,
+});

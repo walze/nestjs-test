@@ -8,4 +8,8 @@ install();
 initialiseSql()
   .then(bootstrap)
   .then(tap(setupSwagger))
-  .then(tap((app) => app.listen(3000)));
+  .then(
+    tap((app) => {
+      app.listen(3000);
+    }),
+  );

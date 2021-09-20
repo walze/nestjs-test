@@ -6,6 +6,10 @@ WORKDIR /api
 
 COPY . .
 
-RUN npm i
+RUN npm i -g npm
 
-CMD npm run start:dev
+RUN yarn
+
+RUN npx sequelize-cli db:seed:all
+
+CMD yarn start:dev
