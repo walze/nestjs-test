@@ -1,3 +1,4 @@
+import { pipe } from 'ramda';
 import { DataTypes } from 'sequelize';
 
 export const defaultAttributes = {
@@ -15,3 +16,8 @@ export const defaultAttributes = {
     defaultValue: new Date(),
   },
 };
+
+export const isValidDate = pipe(
+  (d: Date | number) => +new Date(d),
+  Number.isNaN,
+);

@@ -22,11 +22,11 @@ export class HistoryService {
     });
   }
 
-  history(start: string, end: string) {
+  history(start: Date | number, end: Date | number) {
     return History.findAll({
       where: {
         date: {
-          [Op.between]: [start, end],
+          [Op.between]: [+start, +end],
         },
       },
     });

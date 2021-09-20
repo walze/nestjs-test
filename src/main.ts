@@ -2,11 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
-import { initSql } from './db';
+import { initialiseSql } from './db';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  initSql();
+  initialiseSql();
 
   const document = SwaggerModule.createDocument(
     app,

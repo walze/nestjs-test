@@ -1,6 +1,6 @@
 import { sequelize } from './setup';
 
-export const initSql = async () => {
+export const initialiseSql = async () => {
   sequelize
     .authenticate()
     .then(() =>

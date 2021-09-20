@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Car, CarAttr } from 'db/models/Car';
-import { WhereOptions } from 'sequelize/types';
+import { WhereOptions } from 'sequelize';
 
 @Injectable()
 export class CarService {

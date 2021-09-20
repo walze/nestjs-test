@@ -12,6 +12,8 @@ import {
 import { AuthGuard } from 'auth.guard';
 import { BlacklistService } from 'blacklist/blacklist.service';
 import { HistoryService } from 'history/history.service';
+import { ParseDate } from 'pipes/date.pipe';
+
 import { LotService } from './lot.service';
 
 @Controller('lot')
@@ -33,8 +35,10 @@ export class LotController {
   }
 
   @Post('c')
-  assignCar(@Body('licensePlate') licensePlate: string) {
-    if (this.bs.isBanned({ licensePlate }))
+  async assignCar(@Body('licensePlate') licensePlate: string) {
+    this.bs.isBanned({ licensePlate });
+
+    if (await this.bs.isBanned({ licensePlate }))
       throw new ForbiddenException('Car is Banned');
 
     return this.lotService.assignCar(licensePlate);
@@ -47,7 +51,12 @@ export class LotController {
 
   @Get('history')
   @UseGuards(AuthGuard)
-  history(@Body('start') start: string, @Body('end') end: string) {
+  history(
+    @Body('start', ParseDate)
+    start: Date,
+    @Body('end', ParseDate)
+    end: Date,
+  ) {
     return this.historyService.history(start, end);
   }
 
