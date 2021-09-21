@@ -1,9 +1,10 @@
-import { Sequelize } from 'sequelize';
-import { Config, environments } from 'typings';
+import {Config, environments} from 'typings'
+
+import {Sequelize} from 'sequelize'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-export const config = require('../../sql.config.js') as Config;
-export const ENV = process.env['NODE_ENV'] as environments;
+export const config = require('../../sql.config.js') as Config
+export const ENV = process.env['NODE_ENV'] as environments
 
 const {
   database,
@@ -11,12 +12,12 @@ const {
   password,
   username,
   host = process.env['HOST'],
-} = config[ENV];
+} = config[ENV]
 
 export const sequelize = new Sequelize({
-  host: host || 'db',
   database,
   dialect,
+  host: host || 'db',
   password,
   username,
-});
+})

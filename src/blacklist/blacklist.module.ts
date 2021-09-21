@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { BlacklistController } from './blacklist.controller';
-import { BlacklistService } from './blacklist.service';
+import {BlacklistController} from './blacklist.controller'
+import {BlacklistService} from './blacklist.service'
+import {Module} from '@nestjs/common'
 
 @Module({
   providers: [BlacklistService],

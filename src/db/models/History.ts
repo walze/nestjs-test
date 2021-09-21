@@ -1,8 +1,9 @@
-import { sequelize } from 'db/setup';
-import { defaultAttributes } from 'helpers';
-import { DataTypes, Model, Optional } from 'sequelize';
-import { Car } from './Car';
-import { Lot } from './Lot';
+import {DataTypes, Model, Optional} from 'sequelize'
+
+import {Car} from './Car'
+import {Lot} from './Lot'
+import {defaultAttributes} from 'helpers'
+import {sequelize} from 'db/setup'
 
 export interface HistoryAttr {
   id: number;
@@ -12,7 +13,8 @@ export interface HistoryAttr {
   date: Date;
 }
 
-export type History = Model<HistoryAttr, Optional<HistoryAttr, 'id'>>;
+export type History = HistoryAttr &
+  Model<HistoryAttr, Optional<HistoryAttr, 'id'>>;
 
 export const historyAttr = {
   ...defaultAttributes,
@@ -29,6 +31,9 @@ export const historyAttr = {
       model: Lot,
     },
   },
-};
+}
 
-export const History = sequelize.define<History>('history', historyAttr);
+export const History = sequelize.define<History>(
+    'history',
+    historyAttr
+)

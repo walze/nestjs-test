@@ -7,14 +7,14 @@ import {
   ParseIntPipe,
   Post,
   UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from 'auth.guard';
-import { BlacklistService } from 'blacklist/blacklist.service';
-import { RequestError } from 'helpers';
-import { HistoryService } from 'history/history.service';
-import { ParseDate } from 'pipes/date.pipe';
+} from '@nestjs/common'
+import {AuthGuard} from 'auth.guard'
+import {BlacklistService} from 'blacklist/blacklist.service'
+import {HistoryService} from 'history/history.service'
+import {LotService} from './lot.service'
+import {ParseDate} from 'pipes/date.pipe'
+import {RequestError} from 'helpers'
 
-import { LotService } from './lot.service';
 
 @Controller('lot')
 export class LotController {
@@ -26,45 +26,61 @@ export class LotController {
 
   @Get()
   index() {
-    return this.lotService.getAll();
+    return this.lotService.getAll()
   }
 
   @Get('c/:id')
-  getOne(@Param('id', ParseIntPipe) id: number) {
-    return this.lotService.get(id);
+  getOne(@Param(
+      'id',
+      ParseIntPipe
+  ) id: number) {
+    return this.lotService.get(id)
   }
 
   @Post('c')
   async assignCar(@Body('licensePlate') licensePlate: string) {
-    this.bs.isBanned({ licensePlate });
+    this.bs.isBanned({licensePlate})
 
-    if (await this.bs.isBanned({ licensePlate }))
+    if (await this.bs.isBanned({licensePlate})) {
       throw RequestError({
         message: 'Car is Banned',
         status: 400,
-      });
+      })
+    }
 
-    return this.lotService.assignCar(licensePlate);
+    return this.lotService.assignCar(licensePlate)
   }
 
   @Delete('c/:id')
-  unssignCar(@Param('id', ParseIntPipe) id: number) {
-    return this.lotService.unassignCar(id);
+  unssignCar(@Param(
+      'id',
+      ParseIntPipe
+  ) id: number) {
+    return this.lotService.unassignCar(id)
   }
 
   @Get('history')
   @UseGuards(AuthGuard)
   history(
-    @Body('start', ParseDate)
-    start: Date,
-    @Body('end', ParseDate)
-    end: Date,
+    @Body(
+        'start',
+        ParseDate
+    )
+        start: Date,
+    @Body(
+        'end',
+        ParseDate
+    )
+        end: Date,
   ) {
-    return this.historyService.history(start, end);
+    return this.historyService.history(
+        start,
+        end
+    )
   }
 
   @Get('available')
   available() {
-    return this.lotService.amountAvailable();
+    return this.lotService.amountAvailable()
   }
 }

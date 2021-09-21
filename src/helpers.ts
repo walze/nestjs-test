@@ -1,33 +1,27 @@
-import { pipe } from 'ramda';
-import { DataTypes } from 'sequelize';
+import {DataTypes} from 'sequelize'
+import {IResponseError} from 'typings'
+import {pipe} from 'ramda'
 
 export const defaultAttributes = {
+  createdAt: {
+    defaultValue: new Date(),
+    type: DataTypes.DATE,
+  },
   id: {
-    type: DataTypes.INTEGER.UNSIGNED,
     autoIncrement: true,
     primaryKey: true,
-  },
-  createdAt: {
-    type: DataTypes.DATE,
-    defaultValue: new Date(),
+    type: DataTypes.INTEGER.UNSIGNED,
   },
   updatedAt: {
-    type: DataTypes.DATE,
     defaultValue: new Date(),
+    type: DataTypes.DATE,
   },
-};
+}
 
 export const isValidDate = pipe(
-  (d: Date | number) => +new Date(d),
-  Number.isNaN,
-);
-
-export type IResponse<T> = {
-  status: number;
-  data: T;
-};
-
-export type IResponseError = Error & IResponse<null>;
+    (d: Date | number) => Number(new Date(d)),
+    Number.isNaN,
+)
 
 export const RequestError = ({
   message,
@@ -37,7 +31,7 @@ export const RequestError = ({
   status: number;
 }): IResponseError => ({
   ...new Error(message),
+  data: null,
   message,
   status,
-  data: null,
-});
+})

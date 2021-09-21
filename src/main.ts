@@ -1,15 +1,14 @@
-import { install } from 'source-map-support';
-import { bootstrap, setupSwagger } from 'config';
-import { tap } from 'ramda';
-import { initialiseSql } from './db';
+import {bootstrap, setupSwagger} from 'config'
 
-install();
+import {initialiseSql} from './db'
+import {install} from 'source-map-support'
+import {tap} from 'ramda'
 
-initialiseSql()
-  .then(bootstrap)
-  .then(tap(setupSwagger))
-  .then(
-    tap((app) => {
-      app.listen(3000);
-    }),
-  );
+install()
+
+initialiseSql().
+    then(bootstrap).
+    then(tap(setupSwagger)).
+    then(tap((app) => {
+      app.listen(3000)
+    }),)

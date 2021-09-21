@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { CarService } from 'car/car.service';
-import { Car, Lot, LotAttr } from 'db/models';
-import { HistoryService } from 'history/history.service';
-import { WhereOptions } from 'sequelize';
+import {Car, Lot, LotAttr} from 'db/models'
+
+import {CarService} from 'car/car.service'
+import {HistoryService} from 'history/history.service'
+import {Injectable} from '@nestjs/common'
+import {WhereOptions} from 'sequelize'
 
 @Injectable()
 export class LotService {
@@ -12,58 +13,65 @@ export class LotService {
   ) {}
 
   getAll(where?: WhereOptions<LotAttr>): Promise<Lot[]> {
-    return Lot.findAll({ where, include: Car });
+    return Lot.findAll({
+      include: Car,
+      where,
+    })
   }
 
   get(id: number) {
     return Lot.findOne({
+      include: Car,
       where: {
         id,
       },
-      include: Car,
-    });
+    })
   }
 
   updateCarId(id: number, carId: number) {
-    return Lot.update({ carId }, { where: { id } });
+    return Lot.update(
+        {carId},
+        {where: {id}}
+    )
   }
 
   async assignCar(licensePlate: string) {
-    const [car, created] = await this.carService.findOrCreate(licensePlate);
-    if (!car) return ['Error during car creation', car, created];
+    const [car, created] = await this.carService.findOrCreate(licensePlate)
+    if (!car) return ['Error during car creation', car, created]
 
-    const isAssigned = await Lot.findOne({ where: { carId: car.get('id') } });
-    if (isAssigned) return 'assigned';
+    const isAssigned = await Lot.findOne({where: {carId: car.id}})
+    if (isAssigned) return 'assigned'
 
-    const lot = await Lot.findOne({ where: { carId: null } });
-    if (!lot || lot.getDataValue('carId') !== null) return 'not lot';
+    const lot = await Lot.findOne({where: {carId: null}})
+    if (!lot || lot.carId !== null) return 'not lot'
 
-    car.setDataValue('updatedAt', new Date());
-    lot.setDataValue('carId', car.getDataValue('id'));
+    car.updatedAt = new Date()
+    lot.carId = car.id
 
-    this.historyService.create(car.getDataValue('id'), lot.getDataValue('id'));
+    this.historyService.create(
+        car.id,
+        lot.id
+    )
 
-    return Promise.all([lot.save(), car.save()]);
+    return Promise.all([lot.save(), car.save()])
   }
 
   async unassignCar(id: number) {
-    const lot = await this.get(id);
-    if (!lot) return null;
+    const lot = await this.get(id)
+    if (!lot) return null
 
-    lot.setDataValue('carId', null);
+    lot.carId = null
 
-    return lot.save();
+    return lot.save()
   }
 
   async isAvailable() {
-    const n = await this.amountAvailable();
+    const n = await this.amountAvailable()
 
-    return n > 0;
+    return n > 0
   }
 
   amountAvailable() {
-    return Lot.findAndCountAll({ where: { carId: null } }).then(
-      ({ count }) => count,
-    );
+    return Lot.findAndCountAll({where: {carId: null}}).then(({count}) => count,)
   }
 }
