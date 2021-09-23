@@ -1,3 +1,5 @@
+import {OperatorFunction, map} from 'rxjs'
+
 import {DataTypes} from 'sequelize'
 import {IResponseError} from 'typings'
 import {pipe} from 'ramda'
@@ -35,3 +37,19 @@ export const RequestError = ({
   message,
   status,
 })
+
+export const noLotError = (lot: unknown) => RequestError({
+  status: 404,
+  message: `No available with ${lot}`,
+})
+
+export const assertThrow = <A extends Error>(throwable: A) => <B>(x: B) => {
+  if (!x) throw throwable
+
+  return x as NonNullable<B>
+}
+
+export const assertThrowOp: <T>(
+  x: Parameters<typeof RequestError>[0]
+) => OperatorFunction<T, NonNullable<T>> =
+  x => map(assertThrow(RequestError(x)))

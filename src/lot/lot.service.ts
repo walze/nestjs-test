@@ -1,9 +1,12 @@
 import {Car, Lot, LotAttr} from 'db/models'
+import {RequestError, assertThrowOp, noLotError} from 'helpers'
+import {from, map, mergeMap, tap} from 'rxjs'
 
 import {CarService} from 'car/car.service'
 import {HistoryService} from 'history/history.service'
 import {Injectable} from '@nestjs/common'
 import {WhereOptions} from 'sequelize'
+import {lt} from 'ramda'
 
 @Injectable()
 export class LotService {
@@ -19,7 +22,7 @@ export class LotService {
     })
   }
 
-  get(id: number) {
+  getById(id: number) {
     return Lot.findOne({
       include: Car,
       where: {
@@ -31,19 +34,21 @@ export class LotService {
   updateCarId(id: number, carId: number) {
     return Lot.update(
         {carId},
-        {where: {id}}
+        {where: {id}},
     )
   }
 
   async assignCar(licensePlate: string) {
-    const [car, created] = await this.carService.findOrCreate(licensePlate)
-    if (!car) return ['Error during car creation', car, created]
+    const [car] = await this.carService.findOrCreate(licensePlate)
 
     const isAssigned = await Lot.findOne({where: {carId: car.id}})
-    if (isAssigned) return 'assigned'
+    if (isAssigned) {
+      throw RequestError({status: 400,
+        message: `${licensePlate} is already assigned`})
+    }
 
     const lot = await Lot.findOne({where: {carId: null}})
-    if (!lot || lot.carId !== null) return 'not lot'
+    if (!lot || lot.carId !== null) throw noLotError(null)
 
     car.updatedAt = new Date()
     lot.carId = car.id
@@ -56,22 +61,33 @@ export class LotService {
     return Promise.all([lot.save(), car.save()])
   }
 
-  async unassignCar(id: number) {
-    const lot = await this.get(id)
-    if (!lot) return null
-
-    lot.carId = null
-
-    return lot.save()
+  unassignCar(licensePlate: string) {
+    return from(this.carService.getAll({licensePlate})).
+        pipe(
+            map(([car]) => car?.id),
+            assertThrowOp({
+              status: 404,
+              message: `No car assigned with plate ${licensePlate}`,
+            }),
+            mergeMap((carId) => Lot.findOne({where: {carId}})),
+            assertThrowOp({
+              status: 404,
+              message: `No car assigned with plate ${licensePlate}`,
+            }),
+            tap((lot) => {
+              lot.carId = null
+            }),
+            map((lot) => lot.save()),
+        )
   }
 
-  async isAvailable() {
-    const n = await this.amountAvailable()
-
-    return n > 0
+  isAvailable() {
+    return this.
+        amountAvailable().
+        then(lt(0))
   }
 
-  amountAvailable() {
-    return Lot.findAndCountAll({where: {carId: null}}).then(({count}) => count,)
-  }
+  amountAvailable = () => Lot.
+      findAndCountAll({where: {carId: null}}).
+      then(({count}) => count,)
 }

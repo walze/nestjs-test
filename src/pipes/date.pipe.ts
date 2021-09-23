@@ -8,7 +8,7 @@ export class ParseDate implements PipeTransform {
 
     if (!isValidDate(date)) {
       throw RequestError({
-        message: `Invalid date ${date}`,
+        message: `Invalid date ${value}`,
         status: 500,
       })
     }

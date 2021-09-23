@@ -34,7 +34,7 @@ export class LotController {
       'id',
       ParseIntPipe
   ) id: number) {
-    return this.lotService.get(id)
+    return this.lotService.getById(id)
   }
 
   @Post('c')

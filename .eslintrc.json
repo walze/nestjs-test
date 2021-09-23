@@ -17,9 +17,6 @@
     "node": true,
     "jest": true
   },
-  "ignorePatterns": [
-    ".eslintrc.js"
-  ],
   "rules": {
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
@@ -35,6 +32,7 @@
     "sort-keys":"off",
     "no-console":"off",
     "id-length":"off",
-    "semi": ["error", "never"]
+    "semi": ["error", "never"],
+    "arrow-parens": "off"
   }
 }
