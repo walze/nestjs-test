@@ -1,14 +1,5 @@
-import {bootstrap, setupSwagger} from 'config'
-
-import {initialiseSql} from './db'
 import {install} from 'source-map-support'
-import {tap} from 'ramda'
+import {runAPI} from 'config'
 
 install()
-
-initialiseSql().
-    then(bootstrap).
-    then(tap(setupSwagger)).
-    then(tap((app) => {
-      app.listen(3000)
-    }),)
+runAPI()

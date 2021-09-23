@@ -3,6 +3,8 @@ import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
 import {AppModule} from 'app.module'
 import {INestApplication} from '@nestjs/common'
 import {NestFactory} from '@nestjs/core'
+import {initialiseSql} from 'db'
+import {tap} from 'ramda'
 
 export const setupSwagger = (app: INestApplication) => {
   const document = SwaggerModule.createDocument(
@@ -24,3 +26,10 @@ export const setupSwagger = (app: INestApplication) => {
 }
 
 export const bootstrap = () => NestFactory.create(AppModule)
+
+export const runAPI = () => initialiseSql().
+    then(bootstrap).
+    then(tap(setupSwagger)).
+    then(tap((app) => {
+      app.listen(3000)
+    }),)

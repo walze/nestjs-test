@@ -33,6 +33,8 @@
     "no-console":"off",
     "id-length":"off",
     "semi": ["error", "never"],
-    "arrow-parens": "off"
+    "arrow-parens": "off",
+    "prefer-arrow-callback": "off",
+    "func-names":"off"
   }
 }

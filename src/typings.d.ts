@@ -1,3 +1,4 @@
+import {Car} from 'db/models'
 import {Options} from 'sequelize'
 
 export interface ConfigValues extends Options {
@@ -16,3 +17,4 @@ export type IResponse<T> = {
 };
 
 export type IResponseError = Error & IResponse<null>;
+
