@@ -9,10 +9,8 @@ export class CarService {
     return Car.findAll({where})
   }
 
-  findOrCreate(licensePlate: string) {
-    return Car.findOrCreate({
-      where: {licensePlate},
-    })
+  findOrCreate(where: WhereOptions<CarAttr>) {
+    return Car.findOrCreate({where})
   }
 
   delete(licensePlate: string) {

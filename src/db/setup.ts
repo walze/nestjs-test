@@ -1,18 +1,15 @@
-import {Config, environments} from 'typings'
-
 import {Sequelize} from 'sequelize'
+import {config} from 'dotenv'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-export const config = require('../../sql.config.js') as Config
-export const ENV = process.env['NODE_ENV'] as environments
+config()
 
 const {
-  database,
-  dialect,
-  password,
-  username,
-  host = process.env['HOST'],
-} = config[ENV]
+  DB_USER: username,
+  DB_PW: password,
+  DB_NAME: database,
+  DB_DIALECT: dialect,
+  DB_HOST: host = process.env['HOST'],
+} = process.env as any
 
 export const sequelize = new Sequelize({
   database,

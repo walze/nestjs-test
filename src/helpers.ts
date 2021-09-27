@@ -53,3 +53,14 @@ export const assertThrowOp: <T>(
   x: Parameters<typeof RequestError>[0]
 ) => OperatorFunction<T, NonNullable<T>> =
   x => map(assertThrow(RequestError(x)))
+
+export const ifThrowOp: <T>(f: (t: T) => boolean) => (
+  x: Parameters<typeof RequestError>[0]
+) => OperatorFunction<T, T> =
+  predicate => error => map(x => {
+    if (predicate(x)) {
+      throw RequestError(error)
+    }
+
+    return x
+  })

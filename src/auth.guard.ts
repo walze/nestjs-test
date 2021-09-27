@@ -1,5 +1,6 @@
 import {CanActivate, ExecutionContext, Injectable} from '@nestjs/common'
-import {ENV, config} from 'db/setup'
+
+const adminKeys = ['ABC123']
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -7,6 +8,6 @@ export class AuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest()
     const {token} = req.headers
 
-    return config[ENV].adminKeys.includes(token)
+    return adminKeys.includes(token)
   }
 }

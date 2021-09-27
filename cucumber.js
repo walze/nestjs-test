@@ -1,6 +1,7 @@
 const common = `
   src/__tests__/features/**/*.feature
   --require-module ts-node/register
+  --require-module tsconfig-paths/register
   --require src/__tests__/step_definitions/**/*.ts
   --require src/__tests__/world.ts
   --format summary

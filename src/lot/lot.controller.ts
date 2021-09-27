@@ -51,12 +51,9 @@ export class LotController {
     return this.lotService.assignCar(licensePlate)
   }
 
-  @Delete('c/:id')
-  unssignCar(@Param(
-      'id',
-      ParseIntPipe
-  ) id: number) {
-    return this.lotService.unassignCar(id)
+  @Delete('c/:licensePlate')
+  unssignCar(@Param('licensePlate') licensePlate: string) {
+    return this.lotService.unassignCar(licensePlate)
   }
 
   @Get('history')

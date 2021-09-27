@@ -18,8 +18,12 @@ export class PackagerInterceptor implements NestInterceptor {
         map((data) => ({
           data,
           status,
+          message: 'Request Succeeded',
         })),
-        catchError((e: IResponseError) => of(e)),
+        catchError((e: Partial<IResponseError>) => of({
+          status: 500,
+          ...e,
+        })),
     )
   }
 }

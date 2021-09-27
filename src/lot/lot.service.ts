@@ -38,15 +38,36 @@ export class LotService {
     )
   }
 
+  // eslint-disable-next-line max-statements
   async assignCar(licensePlate: string) {
-    const [car] = await this.carService.findOrCreate(licensePlate)
+    const isAssignedError = {status: 400,
+      message: `${licensePlate} is already assigned`}
+    const isBannedError = {
+      message: `Car ${licensePlate} is Banned`,
+      status: 403,
+    }
+
+    /*
+     * From(this.carService.findOrCreate({licensePlate})).
+     *     pipe(
+     *         map(([car]) => car),
+     *         ifThrowOp((c: Car) => c.banned)(isBannedError),
+     *         mergeMap((car) => from(Lot.findOne({where: {carId: car.id}})).
+     *             pipe(
+     *                 assertThrowOp(isAssignedError),
+     *                 map(lot => ({lot,
+     *                   car}))
+     *             )),
+     *         map(lot => lot)
+     *     )
+     */
+    const [car] = await this.carService.findOrCreate({licensePlate})
+    if (car.banned) throw RequestError(isBannedError)
 
     const isAssigned = await Lot.findOne({where: {carId: car.id}})
     if (isAssigned) {
-      throw RequestError({status: 400,
-        message: `${licensePlate} is already assigned`})
+      throw RequestError(isAssignedError)
     }
-
     const lot = await Lot.findOne({where: {carId: null}})
     if (!lot || lot.carId !== null) throw noLotError(null)
 
