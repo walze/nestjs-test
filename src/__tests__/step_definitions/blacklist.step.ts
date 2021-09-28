@@ -1,15 +1,23 @@
 /* eslint-disable no-invalid-this */
 import {Given, Then, When} from '@cucumber/cucumber'
+import {pack, packagePromise} from 'package.interceptor'
 
 import {AWholeNewWorld} from '__tests__/world'
+import assert from 'assert'
 
 Given<AWholeNewWorld>(
     'a car plated {word} is banned',
     async function(licensePlate) {
-      const [car] = await this.carService.findOrCreate({
-        licensePlate,
-        banned: true,
-      })
+      const carP = this.
+          carService.
+          findOrCreate({
+            licensePlate,
+            banned: true,
+          }).
+          then(([car]) => car)
+
+      const car = await packagePromise(carP)
+      if (!car.data) throw new Error('no car')
 
       this.car = car
     }
@@ -18,18 +26,26 @@ Given<AWholeNewWorld>(
 When<AWholeNewWorld>(
     'that car tries to be assigned to a lot',
     async function() {
-      const [lot] = await this.lotService.assignCar(this.car.licensePlate).
-          catch(e => [e])
+      const car = this.car.data
+
+      const lotP = this.lotService.
+          assignCar(car.licensePlate).
+          then(([lot]) => lot).
+          then(pack(200)).
+          catch(pack(500))
+
+      const lot = await lotP
 
       this.lot = lot
-
-      console.log(lot)
     }
 )
 
 Then<AWholeNewWorld>(
-    'that car should not be allowed to be assigned',
-    function() {
-      // Write code here that turns the phrase above into concrete actions
+    'we get an error saying "Car {word} is Banned"',
+    function(licensePlate) {
+      assert.equal(
+          this.lot.message,
+          `Car ${licensePlate} is Banned`
+      )
     }
 )

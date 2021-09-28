@@ -1,3 +1,4 @@
+import {IMaybeResponse, INonNullResponse} from 'typings'
 import {IWorldOptions, World, setWorldConstructor} from '@cucumber/cucumber'
 
 import {Car} from '../db/models/Car'
@@ -10,9 +11,9 @@ import {config} from 'dotenv'
 config()
 
 export class AWholeNewWorld extends World {
-  car: Car
+  car: INonNullResponse<Car>
 
-  lot: Lot
+  lot: IMaybeResponse<Lot>
 
   carService = new CarService()
 

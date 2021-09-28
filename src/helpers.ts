@@ -1,7 +1,7 @@
 import {OperatorFunction, map} from 'rxjs'
 
 import {DataTypes} from 'sequelize'
-import {IResponseError} from 'typings'
+import {IResponse} from 'typings'
 import {pipe} from 'ramda'
 
 export const defaultAttributes = {
@@ -20,25 +20,35 @@ export const defaultAttributes = {
   },
 }
 
+
+export class ResponseError extends Error implements IResponse<null> {
+  status: number
+
+  data: null
+
+  override message: string
+
+  constructor(options: {message: string, status: number}) {
+    const {message, status} = options
+
+    super(message)
+
+    this.status = status
+    this.data = null
+    this.message = message
+  }
+}
+
+
 export const isValidDate = pipe(
     (d: Date | number) => Number(new Date(d)),
     Number.isNaN,
 )
 
-export const RequestError = ({
-  message,
-  status = 500,
-}: {
-  message: string;
-  status: number;
-}): IResponseError => ({
-  ...new Error(message),
-  data: null,
-  message,
-  status,
-})
+export const newRequestError =
+(r: ConstructorParameters<typeof ResponseError>[0]) => new ResponseError(r)
 
-export const noLotError = (lot: unknown) => RequestError({
+export const noLotError = (lot: unknown) => newRequestError({
   status: 404,
   message: `No available with ${lot}`,
 })
@@ -50,17 +60,18 @@ export const assertThrow = <A extends Error>(throwable: A) => <B>(x: B) => {
 }
 
 export const assertThrowOp: <T>(
-  x: Parameters<typeof RequestError>[0]
+  x: Parameters<typeof newRequestError>[0]
 ) => OperatorFunction<T, NonNullable<T>> =
-  x => map(assertThrow(RequestError(x)))
+  x => map(assertThrow(newRequestError(x)))
 
 export const ifThrowOp: <T>(f: (t: T) => boolean) => (
-  x: Parameters<typeof RequestError>[0]
+  x: Parameters<typeof newRequestError>[0]
 ) => OperatorFunction<T, T> =
   predicate => error => map(x => {
     if (predicate(x)) {
-      throw RequestError(error)
+      throw newRequestError(error)
     }
 
     return x
   })
+

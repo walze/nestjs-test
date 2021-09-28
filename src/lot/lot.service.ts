@@ -1,5 +1,5 @@
 import {Car, Lot, LotAttr} from 'db/models'
-import {RequestError, assertThrowOp, noLotError} from 'helpers'
+import {assertThrowOp, newRequestError, noLotError} from 'helpers'
 import {from, map, mergeMap, tap} from 'rxjs'
 
 import {CarService} from 'car/car.service'
@@ -62,11 +62,11 @@ export class LotService {
      *     )
      */
     const [car] = await this.carService.findOrCreate({licensePlate})
-    if (car.banned) throw RequestError(isBannedError)
+    if (car.banned) throw newRequestError(isBannedError)
 
     const isAssigned = await Lot.findOne({where: {carId: car.id}})
     if (isAssigned) {
-      throw RequestError(isAssignedError)
+      throw newRequestError(isAssignedError)
     }
     const lot = await Lot.findOne({where: {carId: null}})
     if (!lot || lot.carId !== null) throw noLotError(null)

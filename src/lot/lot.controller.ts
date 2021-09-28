@@ -13,7 +13,7 @@ import {BlacklistService} from 'blacklist/blacklist.service'
 import {HistoryService} from 'history/history.service'
 import {LotService} from './lot.service'
 import {ParseDate} from 'pipes/date.pipe'
-import {RequestError} from 'helpers'
+import {newRequestError} from 'helpers'
 
 
 @Controller('lot')
@@ -42,7 +42,7 @@ export class LotController {
     this.bs.isBanned({licensePlate})
 
     if (await this.bs.isBanned({licensePlate})) {
-      throw RequestError({
+      throw newRequestError({
         message: 'Car is Banned',
         status: 400,
       })

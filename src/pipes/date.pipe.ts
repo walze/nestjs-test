@@ -1,5 +1,5 @@
 import {Injectable, PipeTransform} from '@nestjs/common'
-import {RequestError, isValidDate} from 'helpers'
+import {isValidDate, newRequestError} from 'helpers'
 
 @Injectable()
 export class ParseDate implements PipeTransform {
@@ -7,7 +7,7 @@ export class ParseDate implements PipeTransform {
     const date = new Date(value)
 
     if (!isValidDate(date)) {
-      throw RequestError({
+      throw newRequestError({
         message: `Invalid date ${value}`,
         status: 500,
       })

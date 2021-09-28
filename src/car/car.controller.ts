@@ -12,7 +12,7 @@ export class CarController {
 
   @Post()
   findOrCreate(@Body('licensePlate') licensePlate: string) {
-    return this.carService.findOrCreate(licensePlate)
+    return this.carService.findOrCreate({licensePlate})
   }
 
   @Delete()

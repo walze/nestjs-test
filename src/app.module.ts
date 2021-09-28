@@ -3,7 +3,7 @@ import {AppController} from './app.controller'
 import {AppService} from './app.service'
 import {LotModule} from './lot/lot.module'
 import {Module} from '@nestjs/common'
-import {PackagerInterceptor} from 'package.interceptor'
+import {PackageInterceptor} from 'package.interceptor'
 
 @Module({
   controllers: [AppController],
@@ -12,7 +12,7 @@ import {PackagerInterceptor} from 'package.interceptor'
     AppService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: PackagerInterceptor,
+      useClass: PackageInterceptor,
     },
   ],
 })
