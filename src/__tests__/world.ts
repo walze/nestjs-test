@@ -1,6 +1,7 @@
 import {IMaybeResponse, INonNullResponse} from 'typings'
 import {IWorldOptions, World, setWorldConstructor} from '@cucumber/cucumber'
 
+import {BlacklistService} from 'blacklist/blacklist.service'
 import {Car} from '../db/models/Car'
 import {CarService} from 'car/car.service'
 import {HistoryService} from 'history/history.service'
@@ -18,6 +19,8 @@ export class AWholeNewWorld extends World {
   carService = new CarService()
 
   historyService = new HistoryService()
+
+  blacklistService = new BlacklistService()
 
   lotService: LotService
 

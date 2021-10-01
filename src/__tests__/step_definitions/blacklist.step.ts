@@ -10,14 +10,13 @@ Given<AWholeNewWorld>(
     async function(licensePlate) {
       const carP = this.
           carService.
-          findOrCreate({
-            licensePlate,
-            banned: true,
-          }).
+          findOrCreate({licensePlate}).
           then(([car]) => car)
 
+      await this.blacklistService.ban({licensePlate})
+
       const car = await packagePromise(carP)
-      if (!car.data) throw new Error('no car')
+      if (!car.data) throw car
 
       this.car = car
     }

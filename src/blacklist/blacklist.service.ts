@@ -12,16 +12,13 @@ export class BlacklistService {
     }).then(Boolean)
   }
 
-  ban({id, licensePlate}: { id?: number; licensePlate?: string }) {
+  ban(where: { id?: number; licensePlate?: string }) {
     return Car.update(
         {
           banned: true,
         },
         {
-          where: {
-            id,
-            licensePlate,
-          },
+          where,
         },
     )
   }
