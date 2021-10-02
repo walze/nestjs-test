@@ -23,11 +23,14 @@ export class BlacklistService {
     )
   }
 
-  unban(id: number) {
-    return Car.destroy({
-      where: {
-        [Op.and]: [id, {banned: false}],
-      },
-    })
+  unban(where: { id?: number; licensePlate?: string }) {
+    return Car.update(
+        {
+          banned: false,
+        },
+        {
+          where,
+        },
+    )
   }
 }

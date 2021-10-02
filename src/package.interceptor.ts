@@ -23,7 +23,7 @@ export const pack =
   const r = {
     data,
     status,
-    message: 'nice',
+    message: 'Successful',
   }
 
   return r as INonNullResponse<T>
