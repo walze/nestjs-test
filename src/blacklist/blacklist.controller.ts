@@ -33,6 +33,6 @@ export class BlacklistController {
       'id',
       ParseIntPipe
   ) id: number) {
-    return this.blacklistService.unban(id)
+    return this.blacklistService.unban({id})
   }
 }

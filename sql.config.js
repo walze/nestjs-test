@@ -7,4 +7,4 @@ module.exports = {
     dialect: 'mysql',
     adminKeys: ['abc123', 'zxc789'],
   },
-};
+}

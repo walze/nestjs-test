@@ -6,10 +6,10 @@ WORKDIR /api
 
 COPY . .
 
+RUN chmod -R 755 .
+
 RUN npm i -g npm
 
 RUN yarn
 
-RUN npx sequelize-cli db:seed:all
-
-CMD yarn start:dev
+CMD ./start_script.sh
