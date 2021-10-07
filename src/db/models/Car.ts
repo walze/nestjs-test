@@ -1,7 +1,6 @@
-import {DataTypes, Model} from 'sequelize'
+import {DataTypes, Model, Sequelize} from 'sequelize'
 
 import {defaultAttributes} from 'helpers'
-import {sequelize} from 'db/setup'
 
 export interface CarAttr {
   id: number;
@@ -28,7 +27,7 @@ export const carAttr = {
   ...defaultAttributes,
 }
 
-export const Car = sequelize.define<Car>(
+export const defineCar = (s: Sequelize) => s.define<Car>(
     'car',
     carAttr
 )

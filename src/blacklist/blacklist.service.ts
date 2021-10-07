@@ -1,11 +1,13 @@
-import {Car} from 'db/models'
+import {DbService} from 'db/db.service'
 import {Injectable} from '@nestjs/common'
 import {Op} from 'sequelize'
 
 @Injectable()
 export class BlacklistService {
+  constructor(private db: DbService) {}
+
   isBanned(find: { id?: number; licensePlate?: string }) {
-    return Car.count({
+    return this.db.Car.count({
       where: {
         [Op.and]: [find, {banned: true}],
       },
@@ -13,7 +15,7 @@ export class BlacklistService {
   }
 
   ban(where: { id?: number; licensePlate?: string }) {
-    return Car.update(
+    return this.db.Car.update(
         {
           banned: true,
         },
@@ -24,7 +26,7 @@ export class BlacklistService {
   }
 
   unban(where: { id?: number; licensePlate?: string }) {
-    return Car.update(
+    return this.db.Car.update(
         {
           banned: false,
         },

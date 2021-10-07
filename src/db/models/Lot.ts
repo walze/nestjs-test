@@ -1,8 +1,7 @@
-import {DataTypes, Model, Optional} from 'sequelize'
+import {DataTypes, Model, ModelCtor, Optional, Sequelize} from 'sequelize'
 
-import {Car} from './Car'
+import type {Car} from './Car'
 import {defaultAttributes} from 'helpers'
-import {sequelize} from 'db/setup'
 
 export interface LotAttr {
   id: number;
@@ -15,17 +14,25 @@ export interface LotAttr {
 
 export type Lot = LotAttr & Model<LotAttr, Optional<LotAttr, 'id'>>;
 
-export const lotAttr = {
-  ...defaultAttributes,
-  carId: {
-    references: {
-      model: Car,
-    },
-    type: DataTypes.INTEGER.UNSIGNED,
-  },
-}
+export const defineLot = (sql: Sequelize, car: ModelCtor<Car>) => {
+  const lot = sql.define<Lot>(
+      'lot',
+      {
+        ...defaultAttributes,
+        carId: {
+          references: {
+            model: car,
+          },
+          type: DataTypes.INTEGER.UNSIGNED,
+        },
+      }
+  )
 
-export const Lot = sequelize.define<Lot>(
-    'lot',
-    lotAttr
-)
+  lot.belongsTo(
+      car,
+      {foreignKey: 'carId',
+        constraints: false}
+  )
+
+  return lot
+}

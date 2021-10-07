@@ -1,8 +1,8 @@
-import {sequelize} from './setup'
+import {Sequelize} from 'sequelize/types'
 
-export const initialiseSql = () => sequelize.
+export const initialiseSql = (s: Sequelize) => s.
     authenticate().
-    then(() => sequelize.sync({
+    then(() => s.sync({
       alter: false,
       force: false,
       logging: console.log,

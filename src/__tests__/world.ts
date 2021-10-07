@@ -4,6 +4,7 @@ import {IWorldOptions, World, setWorldConstructor} from '@cucumber/cucumber'
 import {BlacklistService} from 'blacklist/blacklist.service'
 import {Car} from '../db/models/Car'
 import {CarService} from 'car/car.service'
+import {DbService} from 'db/db.service'
 import {HistoryService} from 'history/history.service'
 import {Lot} from 'db/models'
 import {LotService} from 'lot/lot.service'
@@ -16,20 +17,28 @@ export class AWholeNewWorld extends World {
 
   lot: IMaybeResponse<Lot>
 
-  carService = new CarService()
+  db: DbService
 
-  historyService = new HistoryService()
+  carService: CarService
 
-  blacklistService = new BlacklistService()
+  historyService: HistoryService
+
+  blacklistService: BlacklistService
 
   lotService: LotService
 
   constructor(args: IWorldOptions) {
     super(args)
+    const db = new DbService()
+    this.db = db
 
+    this.carService = new CarService(db)
+    this.historyService = new HistoryService(db)
+    this.blacklistService = new BlacklistService(db)
     this.lotService = new LotService(
+        db,
         this.carService,
-        this.historyService
+        this.historyService,
     )
   }
 }

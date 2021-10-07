@@ -1,9 +1,8 @@
-import {DataTypes, Model, Optional} from 'sequelize'
+import {DataTypes, Model, ModelCtor, Optional, Sequelize} from 'sequelize'
 
-import {Car} from './Car'
-import {Lot} from './Lot'
+import type {Car} from './Car'
+import type {Lot} from './Lot'
 import {defaultAttributes} from 'helpers'
-import {sequelize} from 'db/setup'
 
 export interface HistoryAttr {
   id: number;
@@ -16,24 +15,43 @@ export interface HistoryAttr {
 export type History = HistoryAttr &
   Model<HistoryAttr, Optional<HistoryAttr, 'id'>>;
 
-export const historyAttr = {
-  ...defaultAttributes,
-  date: DataTypes.DATE,
-  carId: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    references: {
-      model: Car,
-    },
-  },
-  lotId: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    references: {
-      model: Lot,
-    },
-  },
-}
+export const defineHistory =
+(
+    s: Sequelize,
+    c: ModelCtor<Car>,
+    l: ModelCtor<Lot>
+) => {
+  const h = s.define<History>(
+      'history',
+      {
+        ...defaultAttributes,
+        date: DataTypes.DATE,
+        carId: {
+          type: DataTypes.INTEGER.UNSIGNED,
+          references: {
+            model: c,
+          },
+        },
+        lotId: {
+          type: DataTypes.INTEGER.UNSIGNED,
+          references: {
+            model: l,
+          },
+        },
+      }
+  )
 
-export const History = sequelize.define<History>(
-    'history',
-    historyAttr
-)
+
+  c.hasMany(
+      h,
+      {foreignKey: 'carId',
+        constraints: false}
+  )
+  l.hasMany(
+      h,
+      {foreignKey: 'lotId',
+        constraints: false}
+  )
+
+  return h
+}

@@ -1,8 +1,9 @@
-import {Car, Lot, LotAttr} from 'db/models'
+import {Lot, LotAttr} from 'db/models'
 import {assertThrowOp, newRequestError, noLotError} from 'helpers'
 import {from, map, mergeMap, tap} from 'rxjs'
 
 import {CarService} from 'car/car.service'
+import {DbService} from 'db/db.service'
 import {HistoryService} from 'history/history.service'
 import {Injectable} from '@nestjs/common'
 import {WhereOptions} from 'sequelize'
@@ -11,20 +12,21 @@ import {lt} from 'ramda'
 @Injectable()
 export class LotService {
   constructor(
+    private db: DbService,
     private carService: CarService,
     private historyService: HistoryService,
   ) {}
 
   getAll(where?: WhereOptions<LotAttr>): Promise<Lot[]> {
-    return Lot.findAll({
-      include: Car,
+    return this.db.Lot.findAll({
+      include: this.db.Car,
       where,
     })
   }
 
   getById(id: number) {
-    return Lot.findOne({
-      include: Car,
+    return this.db.Lot.findOne({
+      include: this.db.Car,
       where: {
         id,
       },
@@ -32,7 +34,7 @@ export class LotService {
   }
 
   updateCarId(id: number, carId: number) {
-    return Lot.update(
+    return this.db.Lot.update(
         {carId},
         {where: {id}},
     )
@@ -52,7 +54,8 @@ export class LotService {
      *     pipe(
      *         map(([car]) => car),
      *         ifThrowOp((c: Car) => c.banned)(isBannedError),
-     *         mergeMap((car) => from(Lot.findOne({where: {carId: car.id}})).
+     *         mergeMap(
+     * (car) => from(this.db.Lot.findOne({where: {carId: car.id}})).
      *             pipe(
      *                 assertThrowOp(isAssignedError),
      *                 map(lot => ({lot,
@@ -64,11 +67,11 @@ export class LotService {
     const [car] = await this.carService.findOrCreate({licensePlate})
     if (car.banned) throw newRequestError(isBannedError)
 
-    const isAssigned = await Lot.findOne({where: {carId: car.id}})
+    const isAssigned = await this.db.Lot.findOne({where: {carId: car.id}})
     if (isAssigned) {
       throw newRequestError(isAssignedError)
     }
-    const lot = await Lot.findOne({where: {carId: null}})
+    const lot = await this.db.Lot.findOne({where: {carId: null}})
     if (!lot || lot.carId !== null) throw noLotError(null)
 
     car.updatedAt = new Date()
@@ -90,7 +93,7 @@ export class LotService {
               status: 404,
               message: `No car assigned with plate ${licensePlate}`,
             }),
-            mergeMap((carId) => Lot.findOne({where: {carId}})),
+            mergeMap((carId) => this.db.Lot.findOne({where: {carId}})),
             assertThrowOp({
               status: 404,
               message: `No car assigned with plate ${licensePlate}`,
@@ -108,7 +111,9 @@ export class LotService {
         then(lt(0))
   }
 
-  amountAvailable = () => Lot.
-      findAndCountAll({where: {carId: null}}).
-      then(({count}) => count,)
+  amountAvailable() {
+    return this.db.Lot.
+        findAndCountAll({where: {carId: null}}).
+        then(({count}) => count,)
+  }
 }
