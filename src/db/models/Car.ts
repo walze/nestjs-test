@@ -1,33 +1,30 @@
-import {DataTypes, Model, Sequelize} from 'sequelize'
+import {
+  AutoIncrement,
+  Column,
+  Index,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript'
 
-import {defaultAttributes} from 'helpers'
+@Table
+export class Car extends Model {
+  @Index
+  @AutoIncrement
+  @PrimaryKey
+  @Column
+  declare id: number;
 
-export interface CarAttr {
-  id: number;
+  @Index
+  @Column
+  declare licensePlate: string;
 
-  licensePlate: string;
+  @Column
+  declare banned: boolean;
 
-  banned: boolean;
+  @Column
+  declare createdAt: Date;
 
-  createdAt: Date;
-  updatedAt: Date;
+  @Column
+  declare updatedAt: Date;
 }
-
-export type Car = CarAttr & Model<
-  CarAttr,
-  {licensePlate: string, banned?: boolean}
->;
-
-export const carAttr = {
-  banned: DataTypes.BOOLEAN,
-  licensePlate: {
-    type: DataTypes.STRING,
-    unique: 'compositeIndex',
-  },
-  ...defaultAttributes,
-}
-
-export const defineCar = (s: Sequelize) => s.define<Car>(
-    'car',
-    carAttr
-)

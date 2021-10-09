@@ -1,19 +1,20 @@
-import {History, HistoryAttr} from 'db/models'
 import {Op, WhereOptions} from 'sequelize'
+import {History} from 'db/models'
 
-import {DbService} from 'db/db.service'
+import {InjectModel} from '@nestjs/sequelize'
 import {Injectable} from '@nestjs/common'
 
 @Injectable()
 export class HistoryService {
-  constructor(private db: DbService) {}
+  constructor(@InjectModel(History)
+    private history: typeof History,) {}
 
-  getAll(where?: WhereOptions<HistoryAttr>): Promise<History[]> {
-    return this.db.History.findAll({where})
+  getAll(where?: WhereOptions<History['_attributes']>): Promise<History[]> {
+    return this.history.findAll({where})
   }
 
   create(carId: number, lotId: number) {
-    return this.db.History.create({
+    return this.history.create({
       carId,
       date: new Date(),
       lotId,
@@ -21,14 +22,14 @@ export class HistoryService {
   }
 
   delete(carId: number, lotId: number) {
-    return this.db.History.destroy({
+    return this.history.destroy({
       where: {carId,
         lotId},
     })
   }
 
-  history(start: Date | number, end: Date | number) {
-    return this.db.History.findAll({
+  getHistory(start: Date | number, end: Date | number) {
+    return this.history.findAll({
       where: {
         date: {
           [Op.between]: [Number(start), Number(end)],

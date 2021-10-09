@@ -4,7 +4,6 @@ import {Given, Then, When} from '@cucumber/cucumber'
 import {AWholeNewWorld} from '__tests__/world'
 import assert from 'assert'
 import {pack} from 'package.interceptor'
-import {tap} from 'ramda'
 
 Given<AWholeNewWorld>(
     'a car plated {word}',
@@ -13,12 +12,11 @@ Given<AWholeNewWorld>(
           carService.
           findOrCreate({licensePlate}).
           then(([c]) => c).
-          then(tap(c => {
-            c.banned = true
-          })).
           then(pack(200))
 
       if (!car.data) throw car
+
+      await this.blacklistService.ban({licensePlate})
 
       this.car = car
     }

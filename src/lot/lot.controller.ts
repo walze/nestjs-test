@@ -70,7 +70,7 @@ export class LotController {
     )
         end: Date,
   ) {
-    return this.historyService.history(
+    return this.historyService.getHistory(
         start,
         end
     )

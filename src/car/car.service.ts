@@ -1,22 +1,23 @@
-import {Car, CarAttr} from 'db/models/Car'
+import {Car} from 'db/models/Car'
 
-import {DbService} from 'db/db.service'
+import {InjectModel} from '@nestjs/sequelize'
 import {Injectable} from '@nestjs/common'
 import {WhereOptions} from 'sequelize'
 
 @Injectable()
 export class CarService {
-  constructor(private db: DbService) {}
+  constructor(@InjectModel(Car)
+    private car: typeof Car) {}
 
-  getAll(where?: WhereOptions<CarAttr>): Promise<Car[]> {
-    return this.db.Car.findAll({where})
+  getAll(where?: WhereOptions<Car['_attributes']>): Promise<Car[]> {
+    return this.car.findAll({where})
   }
 
-  findOrCreate(where: WhereOptions<CarAttr>) {
-    return this.db.Car.findOrCreate({where})
+  findOrCreate(where: WhereOptions<Car['_attributes']>) {
+    return this.car.findOrCreate({where})
   }
 
   delete(licensePlate: string) {
-    return this.db.Car.destroy({where: {licensePlate}})
+    return this.car.destroy({where: {licensePlate}})
   }
 }

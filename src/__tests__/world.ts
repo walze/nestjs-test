@@ -1,23 +1,43 @@
+import {
+  Before,
+  IWorldOptions,
+  World,
+  setWorldConstructor,
+} from '@cucumber/cucumber'
+import {History, Lot} from 'db/models'
 import {IMaybeResponse, INonNullResponse} from 'typings'
-import {IWorldOptions, World, setWorldConstructor} from '@cucumber/cucumber'
 
 import {BlacklistService} from 'blacklist/blacklist.service'
 import {Car} from '../db/models/Car'
 import {CarService} from 'car/car.service'
-import {DbService} from 'db/db.service'
 import {HistoryService} from 'history/history.service'
-import {Lot} from 'db/models'
 import {LotService} from 'lot/lot.service'
+import {Sequelize} from 'sequelize-typescript'
 import {config} from 'dotenv'
+import {up} from 'db/seeders/20210810171347-lot'
 
 config()
+
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'dist/database.test.sqlite',
+  benchmark: true,
+  logging: false,
+  sync: {alter: true,
+    force: true},
+})
+sequelize.addModels([Car, Lot, History])
+
+Before(async () => {
+  await sequelize.
+      sync().
+      then(s => up(s.getQueryInterface()))
+})
 
 export class AWholeNewWorld extends World {
   car: INonNullResponse<Car>
 
   lot: IMaybeResponse<Lot>
-
-  db: DbService
 
   carService: CarService
 
@@ -29,14 +49,12 @@ export class AWholeNewWorld extends World {
 
   constructor(args: IWorldOptions) {
     super(args)
-    const db = new DbService()
-    this.db = db
 
-    this.carService = new CarService(db)
-    this.historyService = new HistoryService(db)
-    this.blacklistService = new BlacklistService(db)
+    this.carService = new CarService(Car)
+    this.historyService = new HistoryService(History)
+    this.blacklistService = new BlacklistService(Car)
     this.lotService = new LotService(
-        db,
+        Lot,
         this.carService,
         this.historyService,
     )

@@ -1,38 +1,39 @@
-import {DataTypes, Model, ModelCtor, Optional, Sequelize} from 'sequelize'
+import {
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Index,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript'
 
-import type {Car} from './Car'
-import {defaultAttributes} from 'helpers'
+import {Car} from './Car'
 
-export interface LotAttr {
-  id: number;
+@Table
+export class Lot extends Model {
+  @Index
+  @AutoIncrement
+  @PrimaryKey
+  @Column
+  declare id: number;
 
-  carId: number | null;
+  @Index
+  @AllowNull(true)
+  @ForeignKey(() => Car)
+  @Column({type: DataType.INTEGER})
+  declare carId: number | null;
 
-  createdAt: Date;
-  updatedAt: Date;
+  @BelongsTo(() => Car)
+  declare car?: Car;
+
+  @Column
+  declare createdAt: Date;
+
+  @Column
+  declare updatedAt: Date;
 }
 
-export type Lot = LotAttr & Model<LotAttr, Optional<LotAttr, 'id'>>;
-
-export const defineLot = (sql: Sequelize, car: ModelCtor<Car>) => {
-  const lot = sql.define<Lot>(
-      'lot',
-      {
-        ...defaultAttributes,
-        carId: {
-          references: {
-            model: car,
-          },
-          type: DataTypes.INTEGER.UNSIGNED,
-        },
-      }
-  )
-
-  lot.belongsTo(
-      car,
-      {foreignKey: 'carId',
-        constraints: false}
-  )
-
-  return lot
-}

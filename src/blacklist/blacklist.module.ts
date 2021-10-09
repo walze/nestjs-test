@@ -1,11 +1,13 @@
 import {BlacklistController} from './blacklist.controller'
 import {BlacklistService} from './blacklist.service'
-import {DbService} from 'db/db.service'
+import {Car} from 'db/models'
 import {Module} from '@nestjs/common'
+import {SequelizeModule} from '@nestjs/sequelize'
 
 @Module({
-  providers: [BlacklistService, DbService],
+  imports: [SequelizeModule.forFeature([Car])],
+  providers: [BlacklistService],
   controllers: [BlacklistController],
-  exports: [BlacklistService],
+  exports: [BlacklistService, SequelizeModule],
 })
 export class BlacklistModule {}
