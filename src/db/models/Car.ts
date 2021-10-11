@@ -1,11 +1,14 @@
 import {
   AutoIncrement,
   Column,
+  HasOne,
   Index,
   Model,
   PrimaryKey,
   Table,
 } from 'sequelize-typescript'
+
+import {Lot} from './Lot'
 
 @Table
 export class Car extends Model {
@@ -24,6 +27,9 @@ export class Car extends Model {
 
   @Column
   declare createdAt: Date;
+
+  @HasOne(() => Lot)
+  declare lot: Lot
 
   @Column
   declare updatedAt: Date;

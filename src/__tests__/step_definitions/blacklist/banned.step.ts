@@ -1,25 +1,9 @@
 /* eslint-disable no-invalid-this */
-import {Given, Then, When} from '@cucumber/cucumber'
+import {Then, When} from '@cucumber/cucumber'
 
 import {AWholeNewWorld} from '__tests__/world'
 import assert from 'assert'
 import {pack} from 'package.interceptor'
-
-Given<AWholeNewWorld>(
-    'a car plated {word} is banned',
-    async function(licensePlate) {
-      const car = await this.
-          carService.
-          findOrCreate({licensePlate}).
-          then(([c]) => c).
-          then(pack(200))
-      if (!car.data) throw car
-
-      await this.blacklistService.ban({licensePlate})
-
-      this.car = car
-    }
-)
 
 When<AWholeNewWorld>(
     'that car tries to be assigned to a lot',
