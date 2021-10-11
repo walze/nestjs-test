@@ -6,6 +6,7 @@ Feature: Assignments
   Scenario: A car checks-in the parking lot
     When it is assigned to a lot
     Then we get a response with a message saying "Successful"
+    And lot's assigned car should be ANY-234
 
   Scenario: A car checks-out the parking lot
     And it is assigned to a lot

@@ -38,6 +38,19 @@ When<AWholeNewWorld>(
 )
 
 Then<AWholeNewWorld>(
+    'lot\'s assigned car should be {word}',
+    async function(licensePlate) {
+      const [car] = await this.carService.getAll({licensePlate})
+      if (!car) throw new Error(`Could not find car ${licensePlate}`)
+
+      assert.equal(
+          this.lot?.data?.carId,
+          car.id
+      )
+    }
+)
+
+Then<AWholeNewWorld>(
     'lot should be empty',
     function() {
       assert.equal(
