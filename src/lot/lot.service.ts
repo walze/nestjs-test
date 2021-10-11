@@ -103,7 +103,7 @@ export class LotService {
             tap((lot) => {
               lot.carId = null
             }),
-            map((lot) => lot.save()),
+            mergeMap((lot) => lot.save()),
         )
   }
 
