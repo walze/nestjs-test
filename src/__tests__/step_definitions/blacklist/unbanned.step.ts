@@ -1,9 +1,7 @@
 /* eslint-disable no-invalid-this */
 
-import {Then, When} from '@cucumber/cucumber'
-
 import {AWholeNewWorld} from '__tests__/world'
-import assert from 'assert'
+import {When} from '@cucumber/cucumber'
 import {pack} from 'package.interceptor'
 
 When<AWholeNewWorld>(
@@ -20,24 +18,14 @@ When<AWholeNewWorld>(
     async function() {
       const {licensePlate} = this.car.data
 
-      const lotP = this.lotService.
-          assignCar(licensePlate).
-          then(([lot]) => lot).
-          then(pack(200)).
-          catch(pack(500))
+      const lotP = this.lotService
+          .assignCar(licensePlate)
+          .then(([lot]) => lot)
+          .then(pack(200))
+          .catch(pack(500))
 
       const lot = await lotP
 
       this.lot = lot
-    }
-)
-
-Then<AWholeNewWorld>(
-    'we get a response with a message saying "Successful"',
-    function() {
-      assert.equal(
-          this.lot.message,
-          `Successful`
-      )
     }
 )

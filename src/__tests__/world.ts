@@ -13,6 +13,7 @@ import {CarService} from 'car/car.service'
 import {HistoryService} from 'history/history.service'
 import {LotService} from 'lot/lot.service'
 import {Sequelize} from 'sequelize-typescript'
+import {Transaction} from 'sequelize'
 import {config} from 'dotenv'
 import {up} from 'db/seeders/20210810171347-lot'
 
@@ -20,19 +21,29 @@ config()
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: 'dist/database.test.sqlite',
   benchmark: true,
   logging: false,
-  sync: {alter: true,
-    force: true},
+  transactionType: Transaction.TYPES.IMMEDIATE,
 })
+
 sequelize.addModels([Car, Lot, History])
 
-Before(async () => {
-  await sequelize.
-      sync().
-      then(s => up(s.getQueryInterface()))
-})
+export const resetDB = async () => {
+  const s = sequelize
+
+  await s.sync({
+    alter: true,
+    force: true,
+  })
+
+  /*
+   * Await down(s.getQueryInterface())
+   */
+
+  await up(s.getQueryInterface())
+}
+
+Before(resetDB)
 
 export class AWholeNewWorld extends World {
   car: INonNullResponse<Car>
