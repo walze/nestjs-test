@@ -20,8 +20,8 @@ const {
 @Module({
   controllers: [AppController],
   imports: [
-    SequelizeModule.
-        forRoot({
+    SequelizeModule
+        .forRoot({
           port: 3306,
           dialect,
           host,

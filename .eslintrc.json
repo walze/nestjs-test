@@ -36,6 +36,9 @@
     "arrow-parens": "off",
     "prefer-arrow-callback": "off",
     "func-names":"off",
-    "implicit-arrow-linebreak": "off"
+    "implicit-arrow-linebreak": "off",
+    "dot-location": ["error", "property"],
+    "capitalized-comments":"off",
+    "multiline-comment-style":"off"
   }
 }

@@ -8,13 +8,13 @@ import {tap} from 'ramda'
 Given<AWholeNewWorld>(
     'a banned car plated {word}',
     async function(licensePlate) {
-      const car = await this.
-          carService.
-          findOrCreate({licensePlate}).
-          then(([c]) => c).
-          then(tap(({licensePlate: lp}) =>
-            this.blacklistService.ban({licensePlate: lp}))).
-          then(pack(200))
+      const car = await this
+          .carService
+          .findOrCreate({licensePlate})
+          .then(([c]) => c)
+          .then(tap(({licensePlate: lp}) =>
+            this.blacklistService.ban({licensePlate: lp})))
+          .then(pack(200))
 
       if (!car.data) throw car
 

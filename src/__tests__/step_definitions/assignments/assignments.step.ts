@@ -12,11 +12,11 @@ When<AWholeNewWorld>(
     async function() {
       const car = this.car.data
 
-      const lotP = this.lotService.
-          assignCar(car.licensePlate).
-          then(([lot]) => lot).
-          then(pack(200)).
-          catch(pack(500))
+      const lotP = this.lotService
+          .assignCar(car.licensePlate)
+          .then(([lot]) => lot)
+          .then(pack(200))
+          .catch(pack(500))
 
       const lot = await lotP
 
@@ -29,9 +29,9 @@ When<AWholeNewWorld>(
     async function() {
       const car = this.car.data
 
-      const lotP = this.lotService.
-          unassignCar(car.licensePlate).
-          pipe(intercept(200))
+      const lotP = this.lotService
+          .unassignCar(car.licensePlate)
+          .pipe(intercept(200))
 
       this.lot = await lastValueFrom(lotP)
     }

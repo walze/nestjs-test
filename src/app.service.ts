@@ -3,10 +3,10 @@ import {Sequelize} from 'sequelize-typescript'
 
 @Injectable()
 export class AppService {
-  constructor(private sqlz: Sequelize) {
-    this.
-        sqlz.
-        authenticate()
+  constructor(private sequelize: Sequelize) {
+    this
+        .sequelize
+        .authenticate()
   }
 
   getHello(): string {

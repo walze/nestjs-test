@@ -10,11 +10,11 @@ When<AWholeNewWorld>(
     async function() {
       const car = this.car.data
 
-      const lotP = this.lotService.
-          assignCar(car.licensePlate).
-          then(([lot]) => lot).
-          then(pack(200)).
-          catch(pack(500))
+      const lotP = this.lotService
+          .assignCar(car.licensePlate)
+          .then(([lot]) => lot)
+          .then(pack(200))
+          .catch(pack(500))
 
       const lot = await lotP
 

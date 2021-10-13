@@ -33,8 +33,8 @@ export const intercept: <T>(status: number) => (o: Observable<T>) =>
   Observable<IMaybeResponse<T>> =
   status => map(pack(status))
 
-export const interceptPromise = <T>(p: Promise<T>) => from(p).
-    pipe(intercept(200))
+export const interceptPromise = <T>(p: Promise<T>) => from(p)
+    .pipe(intercept(200))
 
 export const packagePromise: <T>(p: Promise<T>) => Promise<IMaybeResponse<T>> =
   p => lastValueFrom(interceptPromise(p))
@@ -43,7 +43,7 @@ export class PackageInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const {statusCode: status} = context.switchToHttp().getResponse()
 
-    return next.handle().
-        pipe(intercept(status))
+    return next.handle()
+        .pipe(intercept(status))
   }
 }
