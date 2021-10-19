@@ -59,7 +59,7 @@ export const assertThrow = <A extends Error>(throwable: A) => <B>(x: B) => {
   return x as NonNullable<B>
 }
 
-export const assertThrowOp: <T>(
+export const assertTrueOP: <T>(
   x: ResponseErrorOptions
 ) => OperatorFunction<T, NonNullable<T>> =
   x => map(assertThrow(newResponseError(x)))

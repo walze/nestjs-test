@@ -1,7 +1,8 @@
 import {Car, Lot} from 'db/models'
+import {Op, WhereOptions} from 'sequelize'
 import {
   assertThrowFnOp,
-  assertThrowOp,
+  assertTrueOP,
   noLotError,
 } from 'helpers'
 import {
@@ -18,7 +19,6 @@ import {CarService} from 'car/car.service'
 import {HistoryService} from 'history/history.service'
 import {InjectModel} from '@nestjs/sequelize'
 import {Injectable} from '@nestjs/common'
-import {WhereOptions} from 'sequelize'
 import {lt} from 'ramda'
 
 @Injectable()
@@ -54,8 +54,26 @@ export class LotService {
     )
   }
 
+  getVacantLot(car: Car) {
+    const query = this.lot.findOne({
+      where: {
+        carId: {
+          [Op.or]: [car.id, null],
+        },
+      },
+    })
 
-  assignCar(licensePlate: string, lotId?: number) {
+    return from(query).pipe(
+        assertThrowFnOp(
+            lot => typeof lot?.carId !== 'number',
+            () => isAssignedError(car.licensePlate)
+        ),
+        assertTrueOP(noLotError('empty lot')),
+        map(lot => ({car, lot}))
+    )
+  }
+
+  assignCar(licensePlate: string) {
     const result$ = from(this.carService.findOrCreate({licensePlate}))
         .pipe(
             map(([car]) => car),
@@ -63,24 +81,7 @@ export class LotService {
                 c => !c.banned,
                 c => isBannedError(c.licensePlate)
             ),
-            tap((car) => from(this
-                .lot
-                .findOne({
-                  where: {
-                    carId: car.id,
-                    ...lotId ?
-                      {} :
-                      {},
-                  },
-                }))
-                .pipe(assertThrowOp(isAssignedError(car.licensePlate)))),
-            mergeMap((car) => from(this
-                .lot
-                .findOne({where: {carId: null}}))
-                .pipe(
-                    assertThrowOp(noLotError('empty lot')),
-                    map(lot => ({lot, car}))
-                )),
+            mergeMap(car => this.getVacantLot(car)),
             tap(({lot, car}) => {
               car.updatedAt = new Date()
               lot.carId = car.id
@@ -102,12 +103,12 @@ export class LotService {
     return from(this.carService.getAll({licensePlate}))
         .pipe(
             map(([car]) => car?.id),
-            assertThrowOp({
+            assertTrueOP({
               status: 404,
               message: `No car assigned with plate ${licensePlate}`,
             }),
             mergeMap((carId) => this.lot.findOne({where: {carId}})),
-            assertThrowOp({
+            assertTrueOP({
               status: 404,
               message: `No car assigned with plate ${licensePlate}`,
             }),
