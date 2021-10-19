@@ -39,6 +39,8 @@
     "implicit-arrow-linebreak": "off",
     "dot-location": ["error", "property"],
     "capitalized-comments":"off",
-    "multiline-comment-style":"off"
+    "multiline-comment-style":"off",
+    "object-property-newline": [2, { "allowAllPropertiesOnSameLine": true }],
+    "no-ternary":"off"
   }
 }

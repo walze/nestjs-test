@@ -3,6 +3,8 @@
 
 import {AWholeNewWorld, resetDB} from '__tests__/world'
 
+import {Await} from 'typings'
+import {LotService} from 'lot/lot.service'
 import {When} from '@cucumber/cucumber'
 
 const makeRandomCar = () => ({
@@ -12,21 +14,21 @@ const makeRandomCar = () => ({
 })
 
 
-export const assignCars = async function(
+type SequencedAssignedCar = Promise<
+  Await<ReturnType<LotService['assignCar']>>[]>
+export const assignCars = function(
     this: AWholeNewWorld,
     cars: ReturnType<typeof makeRandomCar>[],
-) {
-  for (let id = 0; id < cars.length; id += 1) {
-    const car = cars[id]!
-
-    // eslint-disable-next-line no-await-in-loop
-    await this
-        .lotService
-        .assignCar(
-            car.licensePlate,
-            id + 1
-        )
-  }
+): SequencedAssignedCar {
+  return cars.reduce(
+      (p, {licensePlate}) =>
+        p.then(async arr => [
+          await this.lotService
+              .assignCar(licensePlate),
+          ...arr,
+        ]),
+      Promise.resolve([]) as SequencedAssignedCar
+  )
 }
 
 
@@ -42,13 +44,5 @@ When<AWholeNewWorld>(
       await assignCars.bind(this)(cars)
 
       return cars
-    }
-)
-
-When<AWholeNewWorld>(
-    'it is assigned to a occupied lot',
-    function() {
-      // Write code here that turns the phrase above into concrete actions
-      return 'pending'
     }
 )

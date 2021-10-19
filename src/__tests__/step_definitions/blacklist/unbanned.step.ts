@@ -20,7 +20,7 @@ When<AWholeNewWorld>(
 
       const lotP = this.lotService
           .assignCar(licensePlate)
-          .then(([lot]) => lot)
+          .then(({lot}) => lot)
           .then(pack(200))
           .catch(pack(500))
 

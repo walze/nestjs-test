@@ -1,3 +1,5 @@
+export type Await<T> = T extends PromiseLike<infer U> ? U : T
+
 export interface IResponse<T> {
   status: number;
   data: T;

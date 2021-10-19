@@ -1,6 +1,18 @@
 import {Car, Lot} from 'db/models'
-import {assertThrowOp, newRequestError, noLotError} from 'helpers'
-import {from, map, mergeMap, tap} from 'rxjs'
+import {
+  assertThrowFnOp,
+  assertThrowOp,
+  noLotError,
+} from 'helpers'
+import {
+  forkJoin,
+  from,
+  lastValueFrom,
+  map,
+  mergeMap,
+  tap,
+} from 'rxjs'
+import {isAssignedError, isBannedError} from 'errors'
 
 import {CarService} from 'car/car.service'
 import {HistoryService} from 'history/history.service'
@@ -42,55 +54,48 @@ export class LotService {
     )
   }
 
-  // eslint-disable-next-line max-statements
-  async assignCar(licensePlate: string, lotId?: number) {
-    const isAssignedError = {status: 400,
-      message: `${licensePlate} is already assigned`}
-    const isBannedError = {
-      message: `Car ${licensePlate} is Banned`,
-      status: 403,
-    }
 
-    /*
-     * From(this.carService.findOrCreate({licensePlate})).
-     *     pipe(
-     *         map(([car]) => car),
-     *         ifThrowOp((c: Car) => c.banned)(isBannedError),
-     *         mergeMap(
-     * (car) => from(this.lot.findOne({where: {carId: car.id}})).
-     *             pipe(
-     *                 assertThrowOp(isAssignedError),
-     *                 map(lot => ({lot,
-     *                   car}))
-     *             )),
-     *         map(lot => lot)
-     *     )
-     */
-    const [car] = await this.carService.findOrCreate({licensePlate})
-    if (car.banned) throw newRequestError(isBannedError)
+  assignCar(licensePlate: string, lotId?: number) {
+    const result$ = from(this.carService.findOrCreate({licensePlate}))
+        .pipe(
+            map(([car]) => car),
+            assertThrowFnOp(
+                c => !c.banned,
+                c => isBannedError(c.licensePlate)
+            ),
+            tap((car) => from(this
+                .lot
+                .findOne({
+                  where: {
+                    carId: car.id,
+                    ...lotId ?
+                      {} :
+                      {},
+                  },
+                }))
+                .pipe(assertThrowOp(isAssignedError(car.licensePlate)))),
+            mergeMap((car) => from(this
+                .lot
+                .findOne({where: {carId: null}}))
+                .pipe(
+                    assertThrowOp(noLotError('empty lot')),
+                    map(lot => ({lot, car}))
+                )),
+            tap(({lot, car}) => {
+              car.updatedAt = new Date()
+              lot.carId = car.id
+            }),
+            mergeMap(({lot, car}) => forkJoin({
+              lot: lot.save(),
+              car: car.save(),
+              history: this.historyService.create(
+                  car.id,
+                  lot.id
+              ),
+            })),
+        )
 
-    const isAssigned = await this.lot.findOne({where: {
-      carId: car.id,
-      // eslint-disable-next-line no-ternary
-      ...lotId ?
-        {id: lotId} :
-        {},
-    }})
-    if (isAssigned) {
-      throw newRequestError(isAssignedError)
-    }
-    const lot = await this.lot.findOne({where: {carId: null}})
-    if (!lot || lot.carId !== null) throw noLotError('empty spot')
-
-    car.updatedAt = new Date()
-    lot.carId = car.id
-
-    this.historyService.create(
-        car.id,
-        lot.id
-    )
-
-    return Promise.all([lot.save(), car.save()])
+    return lastValueFrom(result$)
   }
 
   unassignCar(licensePlate: string) {

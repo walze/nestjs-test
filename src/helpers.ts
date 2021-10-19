@@ -1,8 +1,8 @@
 import {OperatorFunction, map} from 'rxjs'
+import {identity, ifElse, pipe} from 'ramda'
 
 import {DataTypes} from 'sequelize'
 import {IResponse} from 'typings'
-import {pipe} from 'ramda'
 
 export const defaultAttributes = {
   createdAt: {
@@ -20,7 +20,7 @@ export const defaultAttributes = {
   },
 }
 
-
+export type ResponseErrorOptions = {message: string, status: number}
 export class ResponseError extends Error implements IResponse<null> {
   status: number
 
@@ -28,7 +28,7 @@ export class ResponseError extends Error implements IResponse<null> {
 
   override message: string
 
-  constructor(options: {message: string, status: number}) {
+  constructor(options: ResponseErrorOptions) {
     const {message, status} = options
 
     super(message)
@@ -45,10 +45,10 @@ export const isValidDate = pipe(
     Number.isNaN,
 )
 
-export const newRequestError =
-(r: ConstructorParameters<typeof ResponseError>[0]) => new ResponseError(r)
+export const newResponseError =
+(r: ResponseErrorOptions) => new ResponseError(r)
 
-export const noLotError = (lot: unknown) => newRequestError({
+export const noLotError = (lot: unknown) => newResponseError({
   status: 404,
   message: `No available with ${lot}`,
 })
@@ -60,18 +60,37 @@ export const assertThrow = <A extends Error>(throwable: A) => <B>(x: B) => {
 }
 
 export const assertThrowOp: <T>(
-  x: Parameters<typeof newRequestError>[0]
+  x: ResponseErrorOptions
 ) => OperatorFunction<T, NonNullable<T>> =
-  x => map(assertThrow(newRequestError(x)))
+  x => map(assertThrow(newResponseError(x)))
 
-export const ifThrowOp: <T>(f: (t: T) => boolean) => (
-  x: Parameters<typeof newRequestError>[0]
-) => OperatorFunction<T, T> =
-  predicate => error => map(x => {
-    if (predicate(x)) {
-      throw newRequestError(error)
+export const ifElseOp: <T, R = T>(
+    pred: (t: T) => boolean,
+    e: (t: T) => ResponseErrorOptions,
+    m?: (t: T) => NonNullable<R>,
+  ) => OperatorFunction<T, R> =
+  (p, e, m) => map(ifElse(
+      p,
+      m ?? identity,
+      e,
+  ))
+
+export const throwe: <E extends Error>(x: E) => never =
+    x => {
+      throw x
     }
 
-    return x
-  })
-
+export const assertThrowFnOp: <T>(
+  f: (t: T) => boolean,
+  e: (t: T) => ResponseErrorOptions
+) =>
+  OperatorFunction<T, NonNullable<T>> =
+   (p, e) => map(ifElse(
+       p,
+       identity,
+       pipe(
+           e,
+           newResponseError,
+           throwe
+       ),
+   ))
